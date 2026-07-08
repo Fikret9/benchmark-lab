@@ -8,8 +8,6 @@ MODELS = [
     "all-minilm"
 ]
 
-
-
 models = ollama.list()
 #print (dir(type(models)))
 #print (dir(models))

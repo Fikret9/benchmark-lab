@@ -1,0 +1,27 @@
+AI Systems Engineering Sprint
+Stage	Time	Purpose
+🎯 Commander's Intent	2 min	Why are we doing this?
+🏗 Design Review	5 min	Whiteboard the architecture before coding.
+💻 Build	30–120 min	Implement one focused feature.
+🔍 Code Review	10 min	Review assumptions and trade-offs together.
+📊 After Action Review	5 min	What worked? What surprised us?
+📚 Master's Lesson	2 min	Capture one engineering principle
+
+SPRINT 1
+🎯 Commander's Intent
+
+Build a modular Retrieval Engine that can be evaluated independently of any LLM.
+
+Why? Because every future sprint depends on this.
+Agents, RAG, evaluation, observability... they all assume retrieval is trustworthy.
+
+Deliverable (End of Sprint) By the end, I want you to be able to say:
+"Given any document collection and configuration, my engine can retrieve the Top-K chunks and measure its performance."
+
+Scope
+Document Ingestor:	Read PDFs into text	Build
+Chunker:	Configurable size & overlap	Refactor
+Chunk class:	Domain object	Design & Build
+Embedding Provider:	Pluggable (Nomic, MiniLM...)	Refactor
+Retriever:	Top-K cosine similarity	Refactor
+Metrics:	Time each stage	Build
