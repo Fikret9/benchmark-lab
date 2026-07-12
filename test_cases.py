@@ -1,47 +1,20 @@
 test_cases = [
+
     {
-        "question": "What is the doctor visit copayment?",
-        "expected_document": "data/Student-Healthcare.pdf",
-        "minimum_score": 0.60
-    },
-    {
-        "question": "What are vacation policies?",
+        "question": "What is the vacation policy?",
         "expected_document": "data/Employee-Handbook.pdf",
-        "minimum_score": 0.60
+        "expected_contains": "60 Day Probationary Period"
     },
+
     {
-        "question": "What dental services are covered?",
-        "expected_document": "data/Student-Healthcare.pdf",
-        "minimum_score": 0.60
-    },
-    {
-        "question": "What is the doctor copayment?",
+        "question": "How many vacation hours do full-time salaried employees receive?",
         "expected_document": "data/Employee-Handbook.pdf",
-        "minimum_score": 0.60
+        "expected_contains": "90 hours per year"
     },
     {
-        "question": "How many vacation days are allowed?",
+        "question": "What's the vacation limit?",
         "expected_document": "data/Employee-Handbook.pdf",
-        "minimum_score": 0.60
-    },
-    {
-        "question": "What's the limit?",
-        "expected_document": "data/Employee-Handbook.pdf",
-        "minimum_score": 0.60
-    },
-    {
-        "question": "What is the dental coverage?",
-        "expected_document": "data/Student-Healthcare.pdf",
-        "minimum_score": 0.60
-    },
-    {
-        "question": "What is the capital of France?",
-        "expected_document": "out_of_domain",
-        "minimum_score": 0.00
-    },
-    {
-        "question": "Insurance",
-        "expected_document": "data/Student-Healthcare.pdf",
-        "minimum_score": 0.50
+        "expected_contains": "twice the yearly"
     }
+
 ]

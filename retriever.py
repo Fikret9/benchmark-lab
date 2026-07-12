@@ -1,7 +1,7 @@
 
 from sklearn.metrics.pairwise import cosine_similarity
 import embedding
-
+from chunk import Chunk
 
 
 class Retriever:
@@ -40,6 +40,13 @@ class Retriever:
         results = []
         for score, chunk_id in top_chunks:
             text = chunk_map[chunk_id].text
-            results.append((score, text))
+            document= chunk_map[chunk_id].source
+            results.append((score, text,document))
+
+
+        for score, text, document in results:
+            print(score)
+            print(text)
+            print("-" * 50)
 
         return results
