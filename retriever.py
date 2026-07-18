@@ -1,7 +1,5 @@
 
 from sklearn.metrics.pairwise import cosine_similarity
-import embedding
-from chunk import Chunk
 
 
 class Retriever:
@@ -29,14 +27,29 @@ class Retriever:
             scores.append((float(score), embedding.chunk_id)
         )
 
+
         # STEP 2: Sort top results
         top_chunks = sorted(
            scores,
            reverse=True
-        )[:3]
+        )[:5]
 
         # STEP 3: Return top results texts
         chunk_map = {chunk.id: chunk for chunk in self.chunks}
+
+        ranked = sorted(scores, reverse=True)
+
+        print(f"SEARCHING RANKS: ")
+        for rank, (score, chunk_id) in enumerate(ranked, start=1):
+            chunk = chunk_map[chunk_id]
+
+            if "90 hours of paid vacation per year" in chunk.text:
+                print(f"Rank: {rank}")
+                print(f"Score: {score}")
+                print(chunk.id)
+                break
+
+
         results = []
         for score, chunk_id in top_chunks:
             text = chunk_map[chunk_id].text

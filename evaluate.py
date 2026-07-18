@@ -1,3 +1,4 @@
+import os
 
 
 def evaluate(test_cases, provider,retriever):
@@ -17,11 +18,17 @@ def evaluate(test_cases, provider,retriever):
         answer_match = False
 
         for score, text, document in results:
-            if document == test["expected_document"]:
-                document_match = True
+            print(repr(document))
+            print(repr(test["expected_document"]))
+
+
+            if os.path.normpath(document) == os.path.normpath(test["expected_document"]):
+               document_match = True
+               print(f"Document match: {document_match}")
 
             if test["expected_contains"] in text:
-                answer_match = True
+               answer_match = True
+               print(f"Answer match: {answer_match}")
 
             print(f"Expected: {repr(test['expected_contains'])}")
             print(f"Text contains? {test['expected_contains'] in text}")
@@ -31,17 +38,17 @@ def evaluate(test_cases, provider,retriever):
         if document_match and answer_match:
            passed +=1
            print(
-                    f"PASS\n"
-                    f"Question: {test['question']}\n"
-                    f"Retrieved: {document}\n"
+                 f"PASS\n"
+                 f"Question: {test['question']}\n"
+                 f"Retrieved: {document}\n"
                 )
         else:
-                failed +=1
-                print(
+          failed +=1
+          print(
                 f"FAIL\n"
                 f"Expected: {test['expected_document']}\n"
                 f"Retrieved: {document}\n\n"
-        )
+            )
 
     total = passed + failed
     accuracy = (passed / total * 100) if total else 0

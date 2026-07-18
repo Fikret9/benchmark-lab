@@ -1,4 +1,6 @@
+import os
 
+from DocumentMetadataStore import DocumentMetadataStore
 from chunk import Chunk
 
 import embedding
@@ -13,45 +15,64 @@ from retriever import Retriever
 from build_embeddings import build_embeddings
 from test_cases import test_cases
 
-
-
-"""    Read PDF Document     """
-extractor = PDFReader("data/Employee-Handbook.pdf")
-doc = extractor.read()
-print(f"source: {doc.source} .. {doc.page_count} pages")
-
-#model_id = "all-minilm"
+metadata_store = DocumentMetadataStore()
+metadata_store.load()
 model_id = "nomic-embed-text"
 provider = OllamaEmbeddingProvider(model_id)
+all_chunks =[]
+all_embeddings = []
+
+for file_path in os.listdir("data"):
+    full_path = os.path.join("data", file_path)
+    filename = file_path
+    sha256, last_modified = DocumentMetadataStore.compute_file_info(full_path)
+    chunk_file = f"cache/chunks/{filename}.json"
+    chunk_file = chunk_file.replace(".pdf", "")
+    embedding_file = f"cache/embeddings/{model_id}/{filename}.json"
+    embedding_file = embedding_file.replace(".pdf","")
+
+    chunk_store = RecordStore(Chunk, chunk_file)
+    embedding_store = RecordStore(embedding.Embedding, embedding_file)
 
 
-chunk_store = RecordStore(Chunk, "chunks.json")
-if chunk_store.exists():
-    chunks = chunk_store.load()
-    print(f"Loaded {len(chunks)} records from cache")
-else:
-    chunker = Chunker()
-    chunks = chunker.chunk(doc)
-    chunk_store.save(chunks)
+    if filename not in metadata_store.data:
+        extractor = PDFReader(full_path)
+        doc = extractor.read()
+        """    Create chunks """
+        chunker = Chunker()
+        chunks = chunker.chunk(doc)
+        chunk_store.save(chunks)
+        metadata_store.update_document(filename,sha256,last_modified)
+        texts = [chunk.text for chunk in chunks]
+        """    Create embeddings from Vectors """
+        response = provider.embed(texts)
+        embeddings: list[embedding.Embedding] = []
+        embeddings = build_embeddings(chunks, response.embeddings, model_id) #"""    Build embeddings """
+        embedding_store.save(embeddings)
+        metadata_store.add_embedding_model(filename,model_id)
+        metadata_store.save()
+        all_chunks.extend(chunks)
+        all_embeddings.extend(embeddings)
+    elif metadata_store.has_changed(filename, sha256):
+        print ("Store changed")
+    else:
+        print ("Store unchanged")
+        all_chunks.extend(chunk_store.load())
+        all_embeddings.extend(embedding_store.load())
 
-embeddings_store = RecordStore(embedding.Embedding, "embeddings.json")
-if embeddings_store.exists():
-    embeddings = embeddings_store.load()
-    print(f"Loaded {len(embeddings)} embedding records from cache")
-else:
-    texts = [chunk.text for chunk in chunks]
-    """    Create embeddings from Vectors """
-    response = provider.embed(texts)
-    embeddings: list[embedding.Embedding] = []
-    embeddings = build_embeddings(chunks, response.embeddings, model_id) #"""    Build embeddings """
-    embeddings_store.save(embeddings)
+
 
 """    Create Vector for the query """
 response = provider.embed([" vacation policy"])
 question_vector = response.embeddings[0] 
 
 """    Retrieve top results """
-retriever = Retriever(embeddings,chunks)
+retriever = Retriever(all_embeddings,all_chunks)
+
+print(len(all_chunks))
+print(len(all_embeddings))
+
+
 results = retriever.find_relevant_context(question_vector)
 print("------------------------------------------------------------")
 print(results)

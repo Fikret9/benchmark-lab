@@ -1,6 +1,7 @@
 import json
 import os
 import hashlib
+from dataclasses import asdict
 
 
 class RecordStore:
@@ -17,9 +18,10 @@ class RecordStore:
             records = [self.model_class(**item) for item in data]
         return records
 
-    def save(self):
+    def save(self,data):
+        data = [asdict(item) for item in data]
         with open(self.file_path, "w") as f:
-            json.dump(self.data, f, indent=2)
+            json.dump(data, f, indent=2)
 
     @staticmethod
     def compute_file_info(file_path):

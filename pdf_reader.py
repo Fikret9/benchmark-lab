@@ -21,7 +21,7 @@ class PDFReader:
             if page_text:
                 all_pages_text.append(page_text)
     # 3. Glue all the saved pages together with a newline in between
-
+        print(f"source: {self.file_path} .. {page_count} pages")
         return Document(
             text="\n".join(all_pages_text),
             source=self.file_path,

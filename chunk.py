@@ -2,7 +2,7 @@ from dataclasses import dataclass
 
 @dataclass
 class Chunk:
-    id: int
+    id: str
     text: str
     source: str
     word_offset: int
